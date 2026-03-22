@@ -47,25 +47,28 @@ export default function markrPlugin(): Plugin {
     configureServer(server) {
       return () => {
         server.middlewares.use((req, res, next) => {
-          if (req.url && req.headers.accept?.includes('text/html')) {
-            const html = generateHtml(config)
-            server.transformIndexHtml(req.url, html).then((transformed) => {
-              res.statusCode = 200
-              res.setHeader('Content-Type', 'text/html')
-              res.end(transformed)
-            }).catch(next)
+          const url = req.url ?? '/'
+          const hasExtension = url.split('?')[0].includes('.')
+          if (hasExtension) {
+            next()
             return
           }
-          next()
+          const html = generateHtml(config)
+          server.transformIndexHtml(url, html).then((transformed) => {
+            res.statusCode = 200
+            res.setHeader('Content-Type', 'text/html')
+            res.end(transformed)
+          }).catch(next)
         })
       }
     },
 
     resolveId(id) {
-      if (id === VIRTUAL_ENTRY_ID) {
+      const cleanId = id.startsWith('/') ? id.slice(1) : id
+      if (cleanId === VIRTUAL_ENTRY_ID) {
         return RESOLVED_VIRTUAL_ENTRY_ID
       }
-      if (id === 'virtual:markr/base.css') {
+      if (cleanId === 'virtual:markr/base.css') {
         return resolve(__dirname, '..', 'styles', 'base.css')
       }
     },

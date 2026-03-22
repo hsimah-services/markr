@@ -21,7 +21,7 @@ ${fontLinks}
 
 <body>
   <mr-app></mr-app>
-  <script type="module" src="virtual:markr/entry"></script>
+  <script type="module" src="/virtual:markr/entry"></script>
 </body>
 
 </html>

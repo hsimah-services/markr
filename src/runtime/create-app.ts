@@ -54,9 +54,17 @@ function injectTheme(options: CreateAppOptions): void {
   root.style.setProperty('--font-serif', `"${options.fonts.serif.family}", serif`)
 
   const lightColors = { ...DEFAULT_COLORS, ...options.colors }
+  let lightCSS = ':root {\n'
   for (const [key, value] of Object.entries(lightColors)) {
-    root.style.setProperty(`--color-${camelToKebab(key)}`, value)
+    lightCSS += `  --color-${camelToKebab(key)}: ${value};\n`
   }
+  lightCSS += '}\n'
+
+  let lightForceCSS = ':root.markr-light {\n'
+  for (const [key, value] of Object.entries(lightColors)) {
+    lightForceCSS += `  --color-${camelToKebab(key)}: ${value};\n`
+  }
+  lightForceCSS += '}\n'
 
   const darkColors = { ...DEFAULT_DARK_COLORS, ...options.darkColors }
   let darkCSS = ':root.markr-dark {\n'
@@ -65,15 +73,15 @@ function injectTheme(options: CreateAppOptions): void {
   }
   darkCSS += '}\n'
 
-  const darkMediaCSS = `@media (prefers-color-scheme: dark) {\n  :root:not(.markr-light) {\n`
-  let darkMediaContent = ''
+  let darkMediaCSS = `@media (prefers-color-scheme: dark) {\n  :root:not(.markr-light) {\n`
   for (const [key, value] of Object.entries(darkColors)) {
-    darkMediaContent += `    --color-${camelToKebab(key)}: ${value};\n`
+    darkMediaCSS += `    --color-${camelToKebab(key)}: ${value};\n`
   }
+  darkMediaCSS += '  }\n}\n'
 
   const style = document.createElement('style')
   style.setAttribute('data-markr-theme', '')
-  style.textContent = darkCSS + darkMediaCSS + darkMediaContent + '  }\n}\n'
+  style.textContent = lightCSS + lightForceCSS + darkCSS + darkMediaCSS
   document.head.appendChild(style)
 }
 
