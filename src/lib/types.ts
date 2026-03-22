@@ -47,6 +47,7 @@ export interface MarkrConfig {
   }
   colors?: ColorConfig
   darkColors?: DarkColorConfig
+  theme?: 'light' | 'dark'
 }
 
 export interface ResolvedConfig {
@@ -58,6 +59,7 @@ export interface ResolvedConfig {
   }
   colors: Required<ColorConfig>
   darkColors: Required<DarkColorConfig>
+  theme?: 'light' | 'dark'
   posts: Post[]
   pages: Page[]
 }

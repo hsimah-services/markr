@@ -97,9 +97,27 @@ export function createApp(options: CreateAppOptions): void {
     fonts: options.fonts,
     colors: resolvedColors,
     darkColors: resolvedDarkColors,
+    theme: options.theme,
     posts,
     pages,
   })
+
+  if (options.theme === 'dark') {
+    document.documentElement.classList.add('markr-dark')
+    document.documentElement.classList.remove('markr-light')
+  } else if (options.theme === 'light') {
+    document.documentElement.classList.add('markr-light')
+    document.documentElement.classList.remove('markr-dark')
+  } else {
+    const savedTheme = localStorage.getItem('markr-theme')
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('markr-dark')
+      document.documentElement.classList.remove('markr-light')
+    } else if (savedTheme === 'light') {
+      document.documentElement.classList.add('markr-light')
+      document.documentElement.classList.remove('markr-dark')
+    }
+  }
 
   injectTheme(options)
   registerComponents()

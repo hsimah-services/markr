@@ -106,6 +106,21 @@ a {
   color: var(--color-muted-foreground);
 }
 
+.theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: var(--color-muted-foreground);
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle:hover {
+  color: var(--color-primary);
+}
+
 /* Card */
 .card {
   border-radius: 0.75rem;
