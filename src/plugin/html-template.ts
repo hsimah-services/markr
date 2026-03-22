@@ -20,7 +20,12 @@ ${fontLinks}
 </head>
 
 <body>
-  <mr-app></mr-app>
+  <mr-app>
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh">
+      <div style="width:2rem;height:2rem;border:3px solid #e5e7eb;border-top-color:#6b7280;border-radius:50%;animation:mr-spin 0.6s linear infinite"></div>
+    </div>
+    <style>@keyframes mr-spin{to{transform:rotate(360deg)}}</style>
+  </mr-app>
   <script type="module" src="/virtual:markr/entry"></script>
 </body>
 
