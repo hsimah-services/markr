@@ -38,6 +38,8 @@ function toPage(filename: string, raw: string): Page {
   return {
     slug,
     title: metadata.title ?? slug,
+    uri: metadata.uri ?? `/${slug}`,
+    position: metadata.position !== undefined ? parseInt(metadata.position, 10) : undefined,
     image: metadata.image,
     content,
   }
@@ -50,6 +52,11 @@ export function parsePosts(modules: Record<string, string>): Post[] {
 }
 
 export function parsePages(modules: Record<string, string>): Page[] {
-  return Object.entries(modules)
+  const pages = Object.entries(modules)
     .map(([filename, raw]) => toPage(filename, raw))
+
+  const withPosition = pages.filter((p) => p.position !== undefined).sort((a, b) => a.position! - b.position!)
+  const withoutPosition = pages.filter((p) => p.position === undefined).sort((a, b) => a.title.localeCompare(b.title))
+
+  return [...withPosition, ...withoutPosition]
 }

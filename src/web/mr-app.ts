@@ -1,3 +1,5 @@
+import { getConfig } from '../runtime/config.js'
+
 export class MrApp extends HTMLElement {
   private main!: HTMLElement
 
@@ -22,18 +24,19 @@ export class MrApp extends HTMLElement {
     const header = this.querySelector('mr-header')
     header?.setAttribute('current-path', path)
 
-    switch (true) {
-      case path === '/':
-      default:
-        this.main.innerHTML = '<mr-feed></mr-feed>'
-        break
-      case path.startsWith('/posts/'):
-        this.main.innerHTML = '<mr-blog-post></mr-blog-post>'
-        break
-      case path.startsWith('/about'):
-        this.main.innerHTML = '<mr-about></mr-about>'
-        break
+    if (path.startsWith('/posts/')) {
+      this.main.innerHTML = '<mr-blog-post></mr-blog-post>'
+      return
     }
+
+    const config = getConfig()
+    const matchedPage = config.pages.find((p) => p.uri === path)
+    if (matchedPage) {
+      this.main.innerHTML = `<mr-page slug="${matchedPage.slug}"></mr-page>`
+      return
+    }
+
+    this.main.innerHTML = '<mr-feed></mr-feed>'
   }
 
   private handleClick = (e: MouseEvent) => {

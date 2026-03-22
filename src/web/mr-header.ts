@@ -46,7 +46,13 @@ export class MrHeader extends HTMLElement {
     const config = getConfig()
     const currentPath = this.getAttribute('current-path') ?? '/'
     const homeClass = currentPath === '/' ? 'nav-link--active' : 'nav-link--inactive'
-    const aboutClass = currentPath.startsWith('/about') ? 'nav-link--active' : 'nav-link--inactive'
+
+    const pageLinks = config.pages
+      .map((page) => {
+        const activeClass = currentPath === page.uri ? 'nav-link--active' : 'nav-link--inactive'
+        return `<a href="${escapeHtml(page.uri)}" class="nav-link ${activeClass}">${escapeHtml(page.title)}</a>`
+      })
+      .join('\n              ')
 
     const dark = isDarkActive()
     const icon = dark ? SUN_ICON : MOON_ICON
@@ -60,7 +66,7 @@ export class MrHeader extends HTMLElement {
             <a href="/" class="header-logo">${escapeHtml(config.title)}</a>
             <nav class="header-nav">
               <a href="/" class="nav-link ${escapeHtml(homeClass)}">Home</a>
-              <a href="/about" class="nav-link ${escapeHtml(aboutClass)}">About</a>
+              ${pageLinks}
               ${showToggle ? `<button class="theme-toggle" aria-label="${label}" title="${label}">${icon}</button>` : ''}
             </nav>
           </div>

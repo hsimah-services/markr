@@ -213,21 +213,21 @@ a {
   color: var(--color-muted-foreground);
 }
 
-/* About */
-.about-image-container {
+/* Page */
+.page-image-container {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
 }
 
-.about-image {
+.page-image {
   width: 200px;
   height: 200px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.about .prose img[src$=".svg"] {
+.page .prose img[src$=".svg"] {
   width: 32px;
   height: 32px;
   margin-bottom: 0;

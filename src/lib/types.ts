@@ -10,6 +10,8 @@ export interface Post {
 export interface Page {
   slug: string
   title: string
+  uri: string
+  position?: number
   image?: string
   content: string
 }
