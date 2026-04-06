@@ -21,7 +21,7 @@ export class MrFeed extends HTMLElement {
           <a href="/posts/${escapeHtml(post.slug)}" class="feed-link">
             <mr-card
               card-title="${escapeHtml(post.title)}"
-              card-date="${escapeHtml(post.date)}"
+              card-date="${escapeHtml(post.dates[post.dates.length - 1] ?? post.date)}"
               card-description="${escapeHtml(post.description)}"
             ></mr-card>
           </a>

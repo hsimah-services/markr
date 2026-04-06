@@ -1,5 +1,5 @@
 import { escapeHtml } from '../lib/html.js'
-import { getPostBySlug } from '../runtime/config.js'
+import { getPostBySlug, getConfig } from '../runtime/config.js'
 import type { MrMarkdownRenderer } from './mr-markdown-renderer.js'
 
 export class MrBlogPost extends HTMLElement {
@@ -27,12 +27,27 @@ export class MrBlogPost extends HTMLElement {
       ? `<img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" class="post-image" />`
       : ''
 
+    const repoUrl = getConfig().repoUrl
+    const historyUrl = repoUrl ? `${repoUrl}/commits/main/posts/${encodeURIComponent(post.slug)}.md` : null
+
+    const formatDate = (date: string) =>
+      historyUrl
+        ? `<a href="${escapeHtml(historyUrl)}" class="post-date-link">${escapeHtml(date)}</a>`
+        : escapeHtml(date)
+
+    const publishedHtml = `<time class="post-meta">Published: ${formatDate(post.dates[0] ?? post.date)}</time>`
+    const updatedHtml =
+      post.dates.length > 1
+        ? `<time class="post-meta">Updated: ${formatDate(post.dates[post.dates.length - 1])}</time>`
+        : ''
+
     this.innerHTML = `
       <article>
         ${imageHtml}
         <header class="post-header">
           <h1 class="post-title">${escapeHtml(post.title)}</h1>
-          <time class="post-meta">${escapeHtml(post.date)}</time>
+          ${publishedHtml}
+          ${updatedHtml}
         </header>
         <mr-markdown-renderer></mr-markdown-renderer>
       </article>

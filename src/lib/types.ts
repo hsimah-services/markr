@@ -2,6 +2,7 @@ export interface Post {
   slug: string
   title: string
   date: string
+  dates: string[]
   description: string
   image?: string
   content: string
@@ -42,6 +43,7 @@ export interface DarkColorConfig extends ColorConfig {}
 
 export interface MarkrConfig {
   title: string
+  repoUrl?: string
   fonts: {
     sans: FontConfig
     mono: FontConfig
@@ -54,6 +56,7 @@ export interface MarkrConfig {
 
 export interface ResolvedConfig {
   title: string
+  repoUrl?: string
   fonts: {
     sans: FontConfig
     mono: FontConfig

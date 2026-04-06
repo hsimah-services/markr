@@ -94,6 +94,7 @@ export function createApp(options: CreateAppOptions): void {
 
   setConfig({
     title: options.title,
+    repoUrl: options.repoUrl,
     fonts: options.fonts,
     colors: resolvedColors,
     darkColors: resolvedDarkColors,

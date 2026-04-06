@@ -22,10 +22,12 @@ export function parseFrontmatter(raw: string): { metadata: Record<string, string
 function toPost(filename: string, raw: string): Post {
   const slug = filename.replace(/^.*\/posts\//, '').replace('.md', '')
   const { metadata, content } = parseFrontmatter(raw)
+  const dates = (metadata.date ?? '').split(',').map((d) => d.trim()).filter(Boolean)
   return {
     slug,
     title: metadata.title ?? slug,
-    date: metadata.date ?? '',
+    date: dates[0] ?? '',
+    dates,
     description: metadata.description ?? '',
     image: metadata.image,
     content,
