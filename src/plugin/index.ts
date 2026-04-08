@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, unlinkSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { generateHtml } from './html-template.js'
+import { parseConfigFromSource } from '../lib/config-parser.js'
 import type { MarkrConfig } from '../lib/types.js'
 
 const VIRTUAL_ENTRY_ID = 'virtual:markr/entry'
@@ -105,17 +106,3 @@ createApp({ ...config, posts: postModules, pages: pageModules })
 `
 }
 
-function parseConfigFromSource(source: string): MarkrConfig {
-  const cleaned = source
-    .replace(/import\s+.*?from\s+['"].*?['"]\s*;?\n?/g, '')
-    .replace(/export\s+default\s+/, '')
-    .replace(/defineConfig\s*\(\s*/, '')
-    .replace(/\)\s*;?\s*$/, '')
-
-  try {
-    const fn = new Function(`return (${cleaned})`)
-    return fn() as MarkrConfig
-  } catch {
-    throw new Error('markr: Could not parse markr.config.ts. Ensure it exports a plain object via defineConfig().')
-  }
-}

@@ -10,6 +10,10 @@
     "./vite": {
       "import": "./dist/plugin/index.js",
       "types": "./dist/plugin/index.d.ts"
+    },
+    "./prerender": {
+      "import": "./dist/prerender/index.js",
+      "types": "./dist/prerender/index.d.ts"
     }
   },
   "files": [
@@ -21,6 +25,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
+    "linkedom": "^0.18.12",
     "marked": "^17.0.4"
   },
   "peerDependencies": {

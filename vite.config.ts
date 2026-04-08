@@ -22,11 +22,12 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         'plugin/index': resolve(__dirname, 'src/plugin/index.ts'),
+        'prerender/index': resolve(__dirname, 'src/prerender/index.ts'),
       },
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['vite', 'marked', 'node:path', 'node:fs', 'node:url'],
+      external: ['vite', 'marked', 'linkedom', 'node:path', 'node:fs', 'node:url'],
     },
     cssCodeSplit: false,
   },
