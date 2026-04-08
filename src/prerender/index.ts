@@ -1,4 +1,3 @@
-import { parseHTML } from 'linkedom'
 import { marked } from 'marked'
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
@@ -133,7 +132,10 @@ function renderRoute(
     `--font-serif: "${config.fonts.serif.family}", serif`,
   ].join('; ')
 
-  const template = `<!doctype html>
+  const headerHtml = renderHeader(config, pages, route.path)
+  const contentHtml = renderContent(config, posts, route)
+
+  return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -148,26 +150,14 @@ ${fontLinks}
   <style data-markr-theme>:root { ${fontCss} }\n${themeCss}</style>
 </head>
 <body>
-<mr-app></mr-app>
+  <div class="layout">
+    ${headerHtml}
+    <main class="layout-main">
+      ${contentHtml}
+    </main>
+  </div>
 </body>
 </html>`
-
-  const { document } = parseHTML(template)
-  const app = document.querySelector('mr-app')!
-
-  const headerHtml = renderHeader(config, pages, route.path)
-  const contentHtml = renderContent(config, posts, route)
-
-  app.innerHTML = `
-    <div class="layout">
-      ${headerHtml}
-      <main class="layout-main">
-        ${contentHtml}
-      </main>
-    </div>
-  `
-
-  return `<!doctype html>\n${document.documentElement.outerHTML}`
 }
 
 function renderHeader(config: MarkrConfig, pages: Page[], currentPath: string): string {
@@ -181,7 +171,6 @@ function renderHeader(config: MarkrConfig, pages: Page[], currentPath: string): 
     .join('\n              ')
 
   return `
-      <mr-header current-path="${escapeHtml(currentPath)}">
         <header class="header">
           <div class="header-inner">
             <div class="header-content">
@@ -192,8 +181,7 @@ function renderHeader(config: MarkrConfig, pages: Page[], currentPath: string): 
               </nav>
             </div>
           </div>
-        </header>
-      </mr-header>`
+        </header>`
 }
 
 function renderContent(config: MarkrConfig, posts: Post[], route: Route): string {
@@ -209,32 +197,28 @@ function renderContent(config: MarkrConfig, posts: Post[], route: Route): string
 
 function renderFeed(posts: Post[]): string {
   if (posts.length === 0) {
-    return '<mr-feed><p class="feed-empty">No posts yet.</p></mr-feed>'
+    return '<p class="feed-empty">No posts yet.</p>'
   }
 
   const cards = posts
     .map(
       (post) => `
           <a href="/posts/${escapeHtml(post.slug)}" class="feed-link">
-            <mr-card card-title="${escapeHtml(post.title)}" card-date="${escapeHtml(post.dates[post.dates.length - 1] ?? post.date)}" card-description="${escapeHtml(post.description)}">
-              <div class="card feed-card">
-                <div class="card-header">
-                  <h3 class="card-title">${escapeHtml(post.title)}</h3>
-                  <time class="feed-date">${escapeHtml(post.dates[post.dates.length - 1] ?? post.date)}</time>
-                </div>
-                <div class="card-content">
-                  <p class="card-description">${escapeHtml(post.description)}</p>
-                </div>
+            <div class="card feed-card">
+              <div class="card-header">
+                <h3 class="card-title">${escapeHtml(post.title)}</h3>
+                <time class="feed-date">${escapeHtml(post.dates[post.dates.length - 1] ?? post.date)}</time>
               </div>
-            </mr-card>
+              <div class="card-content">
+                <p class="card-description">${escapeHtml(post.description)}</p>
+              </div>
+            </div>
           </a>`
     )
     .join('')
 
-  return `<mr-feed>
-        <div class="feed">${cards}
-        </div>
-      </mr-feed>`
+  return `<div class="feed">${cards}
+        </div>`
 }
 
 function renderPost(config: MarkrConfig, post: Post): string {
@@ -258,19 +242,15 @@ function renderPost(config: MarkrConfig, post: Post): string {
 
   const contentHtml = marked.parse(post.content) as string
 
-  return `<mr-blog-post>
-        <article>
+  return `<article>
           ${imageHtml}
           <header class="post-header">
             <h1 class="post-title">${escapeHtml(post.title)}</h1>
             ${publishedHtml}
             ${updatedHtml}
           </header>
-          <mr-markdown-renderer>
-            <div class="prose">${contentHtml}</div>
-          </mr-markdown-renderer>
-        </article>
-      </mr-blog-post>`
+          <div class="prose">${contentHtml}</div>
+        </article>`
 }
 
 function renderPageContent(page: Page): string {
@@ -282,12 +262,8 @@ function renderPageContent(page: Page): string {
 
   const contentHtml = marked.parse(page.content) as string
 
-  return `<mr-page slug="${escapeHtml(page.slug)}">
-        <article class="page">
+  return `<article class="page">
           ${imageHtml}
-          <mr-markdown-renderer>
-            <div class="prose">${contentHtml}</div>
-          </mr-markdown-renderer>
-        </article>
-      </mr-page>`
+          <div class="prose">${contentHtml}</div>
+        </article>`
 }

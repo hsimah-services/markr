@@ -27,7 +27,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['vite', 'marked', 'linkedom', 'node:path', 'node:fs', 'node:url'],
+      external: ['vite', 'marked', 'node:path', 'node:fs', 'node:url'],
     },
     cssCodeSplit: false,
   },

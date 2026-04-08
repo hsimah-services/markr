@@ -25,7 +25,6 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "linkedom": "^0.18.12",
     "marked": "^17.0.4"
   },
   "peerDependencies": {
