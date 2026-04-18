@@ -203,7 +203,7 @@ function renderFeed(posts: Post[]): string {
   const cards = posts
     .map(
       (post) => `
-          <a href="/posts/${escapeHtml(post.slug)}" class="feed-link">
+          <a href="posts/${escapeHtml(post.slug)}" class="feed-link">
             <div class="card feed-card">
               <div class="card-header">
                 <h3 class="card-title">${escapeHtml(post.title)}</h3>
