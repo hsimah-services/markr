@@ -1,5 +1,5 @@
 import { marked } from 'marked'
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, cpSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parsePosts, parsePages } from '../lib/posts.js'
@@ -40,6 +40,11 @@ export async function prerender(options?: PrerenderOptions): Promise<void> {
         : resolve(outDir, route.path.replace(/^\//, ''), 'index.html')
     mkdirSync(dirname(filePath), { recursive: true })
     writeFileSync(filePath, html)
+  }
+
+  const assetsDir = resolve(root, 'public', 'assets')
+  if (existsSync(assetsDir)) {
+    cpSync(assetsDir, resolve(outDir, 'assets'), { recursive: true })
   }
 
   console.log(`Prerender complete → ${routes.length} pages written to ${outDir}`)
