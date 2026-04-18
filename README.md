@@ -23,9 +23,10 @@ my-blog/
     second-post.md
   pages/
     about.md
-  assets/
-    favicon-light.svg
-    favicon-dark.svg
+  public/
+    assets/
+      favicon-light.svg
+      favicon-dark.svg
   package.json
 ```
 
@@ -127,9 +128,34 @@ This is the about page.
 # Development
 npx vite
 
-# Build
+# Build (SPA with web components)
 npx vite build
 ```
+
+### Static Prerender
+
+markr can also generate a fully static site — pure HTML with no JavaScript or web components required.
+
+Add scripts to your `package.json`:
+
+```json
+"scripts": {
+  "prerender": "markr-prerender",
+  "serve": "markr-serve"
+}
+```
+
+Then:
+
+```bash
+# Generate static HTML into dist/
+npm run prerender
+
+# Preview the output locally
+npm run serve
+```
+
+`prerender()` reads `markr.config.ts`, all files in `posts/` and `pages/`, and writes one `index.html` per route into `dist/`. It also copies `public/assets/` into `dist/assets/` if that directory exists.
 
 ### Customizing Colors
 
@@ -154,4 +180,4 @@ export default defineConfig({
 
 ### Favicons
 
-Place `favicon-light.svg` and `favicon-dark.svg` in the `assets/` directory at your project root. These are used for light and dark mode respectively.
+Place `favicon-light.svg` and `favicon-dark.svg` in `public/assets/` at your project root. These are used for light and dark mode respectively. The prerender step copies this directory to `dist/assets/` automatically.

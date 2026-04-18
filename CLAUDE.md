@@ -15,10 +15,16 @@ No test runner or linter is configured.
 
 markr is a package that provides a Vite plugin and a browser runtime for repo-based microblogging. Consumers install `markr`, add a `markr.config.ts` + `vite.config.ts`, and write markdown files in `posts/` and `pages/` directories.
 
-### Two entry points
+### Three entry points
 
 - **`markr`** (`src/index.ts` → `dist/index.js`) — Browser runtime. Exports `createApp()` and `defineConfig()`.
 - **`markr/vite`** (`src/plugin/index.ts` → `dist/plugin/index.js`) — Vite plugin. Generates virtual modules and serves HTML.
+- **`markr/prerender`** (`src/prerender/index.ts` → `dist/prerender/index.js`) — Node.js prerenderer. Exports `prerender()` which reads markdown files directly from disk and writes static `index.html` files per route. No web components — pure HTML with inlined CSS.
+
+### CLI bin scripts
+
+- **`markr-prerender`** (`src/prerender/cli.ts`) — Calls `prerender()` from the consumer's project root. Consumers add `"prerender": "markr-prerender"` to their scripts.
+- **`markr-serve`** (`src/prerender/serve.ts`) — Runs `npx serve dist` via `execSync`. Consumers add `"serve": "markr-serve"` to their scripts.
 
 ### How it works end-to-end
 
@@ -33,9 +39,16 @@ markr is a package that provides a Vite plugin and a browser runtime for repo-ba
 
 - `src/web/` — Custom elements (`mr-app`, `mr-header`, `mr-card`, `mr-feed`, `mr-blog-post`, `mr-page`, `mr-markdown-renderer`)
 - `src/runtime/` — `createApp()` and config singleton
-- `src/lib/` — Frontmatter parsing, post/page sorting, types, HTML escaping
+- `src/lib/` — Shared utilities: frontmatter parsing (`posts.ts`), types (`types.ts`), HTML escaping (`html.ts`), color defaults + `camelToKebab` (`colors.ts`), config parser (`config-parser.ts`)
 - `src/plugin/` — Vite plugin and HTML template generation
+- `src/prerender/` — Static HTML renderer (`prerender()` function)
 - `src/styles/base.css` — Base stylesheet (copied to `dist/styles/` at build time, not bundled into JS)
+
+### Markdown frontmatter
+
+Posts (`posts/*.md`) support: `title`, `description`, `date` (comma-separated for multiple dates — first is published, last is updated), `image`.
+
+Pages (`pages/*.md`) support: `title`, `uri` (defaults to `/<slug>`), `position` (sort order), `image`.
 
 ### Important conventions
 
@@ -43,5 +56,6 @@ markr is a package that provides a Vite plugin and a browser runtime for repo-ba
 - `appType: 'custom'` is required so Vite doesn't expect an `index.html` in dev mode.
 - Virtual module IDs use the `\0` prefix convention for resolved IDs.
 - `import.meta.glob` paths in the virtual entry use `/` prefix to resolve from the consumer's project root.
-- `__dirname` in the built plugin resolves to `dist/plugin/`, so CSS path resolution uses `resolve(__dirname, '..', 'styles', 'base.css')`.
-- Colors use oklch format. Theme injection creates CSS custom properties on `:root`.
+- `__dirname` in built plugin/prerender code resolves to `dist/plugin/` or `dist/prerender/`, so CSS path resolution uses `resolve(__dirname, '..', 'styles', 'base.css')`.
+- Colors use oklch format. Theme injection creates CSS custom properties on `:root`. Defaults live in `src/lib/colors.ts` and are shared by both `create-app.ts` (runtime) and `prerender/index.ts`.
+- `parseConfigFromSource()` in `src/lib/config-parser.ts` is shared by the Vite plugin and the prerenderer. It strips TS syntax with regex and evals with `new Function` — it does not compile TypeScript.
