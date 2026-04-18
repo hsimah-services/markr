@@ -16,6 +16,10 @@
       "types": "./dist/prerender/index.d.ts"
     }
   },
+  "bin": {
+    "markr-prerender": "./dist/prerender/cli.js",
+    "markr-serve": "./dist/prerender/serve.js"
+  },
   "files": [
     "dist"
   ],
@@ -32,6 +36,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "serve": "^14.2.6",
     "typescript": "~5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-dts": "^4.5.4"

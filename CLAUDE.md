@@ -21,6 +21,11 @@ markr is a package that provides a Vite plugin and a browser runtime for repo-ba
 - **`markr/vite`** (`src/plugin/index.ts` → `dist/plugin/index.js`) — Vite plugin. Generates virtual modules and serves HTML.
 - **`markr/prerender`** (`src/prerender/index.ts` → `dist/prerender/index.js`) — Node.js prerenderer. Exports `prerender()` which reads markdown files directly from disk and writes static `index.html` files per route. No web components — pure HTML with inlined CSS.
 
+### CLI bin scripts
+
+- **`markr-prerender`** (`src/prerender/cli.ts`) — Calls `prerender()` from the consumer's project root. Consumers add `"prerender": "markr-prerender"` to their scripts.
+- **`markr-serve`** (`src/prerender/serve.ts`) — Runs `npx serve dist` via `execSync`. Consumers add `"serve": "markr-serve"` to their scripts.
+
 ### How it works end-to-end
 
 1. **Plugin reads config** — `parseConfigFromSource()` reads `markr.config.ts` as raw text, strips TS syntax with regex, and evaluates the object literal with `new Function`. It does not use TS compilation.
