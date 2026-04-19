@@ -140,11 +140,15 @@ function renderRoute(
   const headerHtml = renderHeader(config, pages, route.path)
   const contentHtml = renderContent(config, posts, route)
 
+  const restoreScript = !config.theme ? THEME_RESTORE_SCRIPT : ''
+  const toggleScript = !config.theme ? TOGGLE_SCRIPT : ''
+
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  ${restoreScript}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 ${fontLinks}
@@ -161,9 +165,51 @@ ${fontLinks}
       ${contentHtml}
     </main>
   </div>
+  ${toggleScript}
 </body>
 </html>`
 }
+
+const MOON_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
+const SUN_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
+
+const THEME_RESTORE_SCRIPT = `<script>(function(){var s=localStorage.getItem('markr-theme');var r=document.documentElement;if(s==='dark'){r.classList.add('markr-dark');}else if(s==='light'){r.classList.add('markr-light');}})();</script>`
+
+const TOGGLE_SCRIPT = `<script>
+  (function() {
+    var root = document.documentElement;
+    function updateToggle() {
+      var dark = root.classList.contains('markr-dark') ||
+        (!root.classList.contains('markr-light') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      var btn = document.querySelector('.theme-toggle');
+      if (!btn) return;
+      btn.innerHTML = dark ? '${SUN_ICON}' : '${MOON_ICON}';
+      btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      btn.setAttribute('title', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      updateToggle();
+      var btn = document.querySelector('.theme-toggle');
+      if (btn) {
+        btn.addEventListener('click', function() {
+          var dark = root.classList.contains('markr-dark') ||
+            (!root.classList.contains('markr-light') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) {
+            root.classList.remove('markr-dark'); root.classList.add('markr-light');
+            localStorage.setItem('markr-theme', 'light');
+          } else {
+            root.classList.remove('markr-light'); root.classList.add('markr-dark');
+            localStorage.setItem('markr-theme', 'dark');
+          }
+          updateToggle();
+        });
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+        if (!localStorage.getItem('markr-theme')) updateToggle();
+      });
+    });
+  })();
+</script>`
 
 function renderHeader(config: MarkrConfig, pages: Page[], currentPath: string): string {
   const homeClass = currentPath === '/' ? 'nav-link--active' : 'nav-link--inactive'
@@ -175,6 +221,11 @@ function renderHeader(config: MarkrConfig, pages: Page[], currentPath: string): 
     })
     .join('\n              ')
 
+  const showToggle = !config.theme
+  const toggleHtml = showToggle
+    ? `<button class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">${MOON_ICON}</button>`
+    : ''
+
   return `
         <header class="header">
           <div class="header-inner">
@@ -183,6 +234,7 @@ function renderHeader(config: MarkrConfig, pages: Page[], currentPath: string): 
               <nav class="header-nav">
                 <a href="/" class="nav-link ${homeClass}">Home</a>
                 ${pageLinks}
+                ${toggleHtml}
               </nav>
             </div>
           </div>
