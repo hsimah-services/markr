@@ -1,5 +1,7 @@
 # markr
-
+<p align="center">
+  <img src="./assets/markr-logo.svg" alt="markr Logo" style="width: 400px" />
+</p>
 Markr is a repo-based microblogging platform. Posts are simply checked into the git repo as markdown files (with yaml-style frontmatter).
 
 ## Getting Started
